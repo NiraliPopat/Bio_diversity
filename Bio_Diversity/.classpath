@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/common/lucene-analyzers-common-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/core/lucene-core-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/demo/lucene-demo-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/queryparser/lucene-queryparser-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/commons-lang3-3.5/commons-lang3-3.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/NiraliPopat/Downloads/jsoup-1.10.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/NiraliPopat/Downloads/public_mm_win32_javaapi_2014/public_mm/src/javaapi/dist/MetaMapApi.jar"/>
+	<classpathentry kind="lib" path="C:/Users/NiraliPopat/Downloads/public_mm_win32_javaapi_2014/public_mm/src/javaapi/dist/prologbeans.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/suggest/lucene-suggest-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/icu/lucene-analyzers-icu-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/kuromoji/lucene-analyzers-kuromoji-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/morfologik/lucene-analyzers-morfologik-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/phonetic/lucene-analyzers-phonetic-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/phonetic/lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/smartcn/lucene-analyzers-smartcn-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/stempel/lucene-analyzers-stempel-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/lucene-6.3.0/lucene-6.3.0/analysis/uima/lucene-analyzers-uima-6.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/NiraliPopat/Downloads/lucene-wordnet-3.2.0.jar/lucene-wordnet-3.2.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
