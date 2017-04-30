@@ -80,7 +80,7 @@ import org.jsoup.nodes.Document;
 
 
 public class IndexFiles {
-  
+  static int n=0;
   private IndexFiles() {}
   int counter = 0;
   /** Index all text files under a directory. */
@@ -89,7 +89,7 @@ public class IndexFiles {
                  + " [-index INDEX_PATH] [-docs DOCS_PATH] [-update]\n\n"
                  + "This indexes the documents in DOCS_PATH, creating a Lucene index"
                  + "in INDEX_PATH that can be searched with SearchFiles";
-    String indexPath = "E:/index17"; 
+    String indexPath = "E:/index26"; 
     // is DFR
     //2 is normal
     //3 is ib with h3
@@ -107,6 +107,19 @@ public class IndexFiles {
     //15 like 14 without stemming
     //16 like 15 with LMD
     //17 like 11 with LMD
+    //18 with count of lower and upper delimiters of split
+    //19 like 18 with (?i) to ignore case in all and valipas > 9
+    //20 with (?i) in all
+    //21 is fresh 19
+    //22 is legalspans with LMD
+    //23 is fresh 19 without 0 pass
+    //24 is legalspans with InB2
+    //25 is 23
+    //26 is 25 with s stemmer and 0
+    //27 is legalspans demo of 50 passages
+    //28 is modified legal span and fast
+    //29 is 28 with s-stemming
+    //30 is 28 with porter stemming
     String docsPath = "E:/documents/text";
     boolean create = true;
     for(int i=0;i<args.length;i++) {
@@ -149,11 +162,11 @@ public class IndexFiles {
       		new LambdaDF(),//1 
       		//new LambdaTTF(), //2
       		new NormalizationH2());*/
-      /*DFRSimilarity similarity = new DFRSimilarity(
+      /*DFRSimilarity similarity = new DFRSimilarity( ///////INB2 Similarity
         new BasicModelIn(),
         new AfterEffectL(),
         new NormalizationH1());*/
-      LMDirichletSimilarity similarity = new LMDirichletSimilarity();
+      LMDirichletSimilarity similarity = new LMDirichletSimilarity();//////// LMD Model
       iwc.setSimilarity(similarity);
       IndexWriter writer = new IndexWriter(dir, iwc);
    
@@ -293,7 +306,7 @@ public class IndexFiles {
       //String[] passages = file_content.split("<P|<p");
       //String[] passages = file_content.split("<P");
       //String[] passages = file_content.split("<P>|<H1>|<H2>|<H3>|<H4>|<H5>|<H6>|<BR>|<HR>|<TABLE>|<TD>|<TH>|<TR>|<OL>|<UL>|<p>|<br>|<hr>");//|<p|<h1|<h2|<h3|<h4|<h5|<h6|<br|<hr|<table|<td|<th|<tr|<ol|<ul");
-      String[] passages = file_content.split("<P|<H1|<H2|<H3|<H4|<H5|<H6|<BR|<HR|<TABLE|<TD|<TH|<TR|<OL|<UL|<p|<br|<hr");//|<p|<h1|<h2|<h3|<h4|<h5|<h6|<br|<hr|<table|<td|<th|<tr|<ol|<ul");
+      String[] passages = file_content.split("(?i)<P|(?i)<H1|(?i)<H2|(?i)<H3|(?i)<H4|(?i)<H5|(?i)<H6|(?i)<BR|(?i)<HR|(?i)<TABLE|(?i)<TD|(?i)<TH|(?i)<TR|(?i)<OL|(?i)<UL");//|<p|<h1|<h2|<h3|<h4|<h5|<h6|<br|<hr|<table|<td|<th|<tr|<ol|<ul");
       
       //String[] passages = StringUtils.substringsBetween(file_content, "<P", "<P");
       //String[] title = StringUtils.substringsBetween(file_content, "<body>", "</");
@@ -310,6 +323,7 @@ public class IndexFiles {
 	  StandardTokenizer stdToken = new StandardTokenizer();
 	  //Tokenizer stdToken = new WhitespaceTokenizer();
 	  EnglishMinimalStemmer stemmer = new EnglishMinimalStemmer();
+	  
 	     //stdToken.setReader(new StringReader("Some stuff that is in need of analysis. stuff patients PATIENT d > 0.5 Dnn>Bnn D.N.A diseases heart attacks at cl-fo"));
 	   
 	     
@@ -338,7 +352,7 @@ public class IndexFiles {
         	  ptitle = dochtml.body().text().toLowerCase();
         	  System.out.println("Title is" + ptitle);
     	  }
-		  for(int i=1; i<passages.length; i++){
+		  for(int i=0; i<passages.length; i++){
 			  
 			  //System.out.println(i);
 			  //cnames = cname.split(":");
@@ -354,7 +368,7 @@ public class IndexFiles {
 			  String plainStr = dochtml.body().text();
 			  String[] validpas = plainStr.split(" ");
 			  
-			  if(validpas.length>10){
+			  if(validpas.length>9){
 				  j++;
 				  Field passageId = new StringField("id",
 			    	      file.getFileName().toString()+"."+i,
@@ -387,7 +401,7 @@ public class IndexFiles {
 			     //int l=0;
 			     String term="";
 			     StringBuilder sb = new StringBuilder();
-			     OffsetAttribute offsetAttribute = tokenStream.addAttribute(OffsetAttribute.class);
+			     //OffsetAttribute offsetAttribute = tokenStream.addAttribute(OffsetAttribute.class);
 			     CharTermAttribute charTermAttr = tokenStream.getAttribute(CharTermAttribute.class);
 			        try{
 			        	//int l;
@@ -416,10 +430,11 @@ public class IndexFiles {
 			                	//sb.append(term);
 			                }
 			                //int l = stemmer.stem(charTermAttr.toString().toCharArray(), charTermAttr.toString().length());
-			                //l = stemmer.stem(term.toCharArray(), term.length());
+			                int l;
+			                l = stemmer.stem(term.toCharArray(), term.length());
 			                //sb.append(charTermAttr.toString(),0,l);
-			                //sb.append(term,0,l);
-			                sb.append(term);
+			                sb.append(term,0,l);
+			                //sb.append(term);
 			                
 			                /*if(term.contains("-")){
 			                	String[] terms=term.split("-");
@@ -461,8 +476,9 @@ public class IndexFiles {
 				  //writer.addDocument(doc);
 				  
 				  if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
+					  n++;
 				        // New index, so we just add the document (no old document can be there):
-				        System.out.println(".......adding " + file.getFileName().toString() + " passage "+ j);
+				        System.out.println(".......adding " + file.getFileName().toString() + " passage "+ j + "--" +n);
 				        writer.addDocument(doc);
 				      } else {
 				        // Existing index (an old copy of this document may have been indexed) so 

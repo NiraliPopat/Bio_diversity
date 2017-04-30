@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -70,7 +71,8 @@ public class SearchFiles {
 
   private SearchFiles() {}
   
-  static String rfile = "DFRInB2_17_t9";
+  static String rfile = "InB2_i17_t6";
+  //static String rfile = "demo";
 
   /** Simple command-line based search demo. */
   public static void main(String[] args) throws Exception {
@@ -122,31 +124,27 @@ public class SearchFiles {
     IndexReader indexReader = DirectoryReader.open(FSDirectory.open(Paths.get(index)));
     //IndexSearcher searcher = new IndexSearcher(reader);
     //Analyzer analyzer = new StandardAnalyzer();
+    //EnglishAnalyzer analyzer = new EnglishAnalyzer();
     StandardAnalyzer analyzer = new StandardAnalyzer();
     //Directory directory = new RAMDirectory();
     //float c = (float) 9.5;
     //Directory dir = FSDirectory.open(Paths.get(indexPath));
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
-    float k= (float) 1.4;
-    float b = (float) 0.55;
-    //BM25Similarity similarity = new BM25Similarity(k, b);
-    /*IBSimilarity similarity = new IBSimilarity(
-    		new DistributionLL(),//1 
-    		//new DistributionSPL(),//2
-    		new LambdaDF(),//1 
-    		//new LambdaTTF(), //2
-    		new NormalizationH2());*/
-    DFRSimilarity similarity = new DFRSimilarity(
+    
+  //--LMD model, to use other models remove their comment and put this in comment
+    LMDirichletSimilarity similarity = new LMDirichletSimilarity(); //LMD Model
+    
+    //---For Okapi Model remove comment 
+    //BM25Similarity similarity = new BM25Similarity(); 
+    
+  //---For InB2 Model,  remove comment 
+    /*DFRSimilarity similarity = new DFRSimilarity( 
       new BasicModelIn(),
       new AfterEffectB(),
-      new NormalizationH2());
-    //LMDirichletSimilarity similarity = new LMDirichletSimilarity();
-    //LMJelinekMercerSimilarity similarity = new LMJelinekMercerSimilarity((float) 0.57);
-    //LMSimilarity similarity = new LMSimilarity
-    config.setSimilarity(similarity);
-    //IndexWriter indexWriter = new IndexWriter(directory, config);
+      new NormalizationH2());*/
     
-    //IndexReader indexReader = DirectoryReader.open(directory);
+       
+    config.setSimilarity(similarity);
     IndexSearcher indexSearcher = new IndexSearcher(indexReader);
     indexSearcher.setSimilarity(similarity);
     QueryParser queryParser = new QueryParser(field, analyzer);
@@ -175,8 +173,8 @@ public class SearchFiles {
         break;
       }
       
-      //Query query = parser.parse(line);
       Query query = queryParser.parse(line);
+      //Query query = queryParser.parse("John");
       
       System.out.println("Searching for: " + query.toString(field));
             
@@ -190,16 +188,8 @@ public class SearchFiles {
         System.out.println("Time: "+(end.getTime()-start.getTime())+"ms");
       }
 
-      /*int qid=200;
-      doPagingSearch(in, searcher, query, hitsPerPage, raw, queries == null && queryString == null, qid);
-      query = parser.parse("SLE");
-      //qid++;
-      doPagingSearch(in, searcher, query, hitsPerPage, raw, queries == null && queryString == null, qid );
-      query = parser.parse("health");
-      //qid++;
-      doPagingSearch(in, searcher, query, hitsPerPage, raw, queries == null && queryString == null, qid);*/
 
-      String file = "E:/Nirali/Nirali/2007/topics9.txt";
+      String file = "E:/Nirali/Nirali/2007/topics6.txt"; //Path to query file
       //String file = "E:/Nirali/Nirali/2007/2007topics (copy).txt";
       try (BufferedReader br = new BufferedReader(new FileReader(file ))) {
 		    
@@ -209,27 +199,12 @@ public class SearchFiles {
 		  while ((topic = br.readLine()) != null) {
 		    	
 			  	topic = topic.substring(4);
-			  	//topic = topic.substring(5);
-		    	System.out.println("Topic------"+qid+"...." + topic);
-		    	topic = topic.replace("[", "");
-			    topic = topic.replace("]", "");
-		    	
+			 		    	
 		    	query = queryParser.parse(topic);
 		    	System.out.println("Q: "+query);
 			    doPagingSearch(in, indexSearcher, query, hitsPerPage, raw, queries == null && queryString == null, qid );
 			    qid++;
-			  	/*String[] topic = l.split(">");
-		    	if(topic.length == 2){
-		    		qid = Integer.parseInt(topic[0].substring(1));
-				    String qtopic = topic[1];
-				    String[] qElement = StringUtils.substringsBetween(qtopic, "[", "]");
-				    qtopic = qtopic.replace("[", "");
-				    qtopic = qtopic.replace("]", "");
-		    	
-				    query = queryParser.parse(qtopic);
-				    doPagingSearch(in, indexSearcher, query, hitsPerPage, raw, queries == null && queryString == null, qid );
-				    qid++;
-		    	}*/
+			  	
 
 		  }
       }catch (Exception e) {
@@ -243,7 +218,7 @@ public class SearchFiles {
       
     indexReader.close();
     
-    //--------------Python res eval script--------------------
+    //--------------To get results using python res eval script--------------------
     String s = null;
 
     try {
@@ -345,13 +320,13 @@ public class SearchFiles {
         org.apache.lucene.document.Document doc = searcher.doc(hits[i].doc);
         String path = doc.get("path");
         if (path != null) {
-          String nm = doc.get("name").substring(0, doc.get("name").length() - 5);
-          System.out.println(qid + " " + nm + " " + (i+1) + " " + hits[i].score + " " + doc.get("offset") + " " + doc.get("length") + " Okapi" );
+          String nm = doc.get("name");
+          System.out.println(qid + " " + nm + " " + (i+1) + " " + hits[i].score + " " + doc.get("offset") + " " + doc.get("length")  + " " + rfile );
           //fw.write("\n" + qid + " " + nm + " " + (i+1) + " " + hits[i].score + " " + doc.get("offset") + " " + doc.get("length") + " Lucene1");
           try {
               // APPEND MODE SET HERE
               bw = new BufferedWriter(new FileWriter("E:/Nirali/Nirali/2007/"+ rfile +".txt", true));
-              bw.write(qid + " " + nm + " " + (i+1) + " " + hits[i].score + " " + doc.get("offset") + " " + doc.get("length") + " LMD_i12" );
+              bw.write(qid + " " + nm + " " + (i+1) + " " + hits[i].score + " " + doc.get("offset") + " " + doc.get("length") + " " + rfile );
               bw.newLine();
               bw.flush();
            } catch (IOException ioe) {
